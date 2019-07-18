@@ -193,6 +193,24 @@ func TestEncoder_DecodeString(t *testing.T) {
 			expectedLat: -34.615662,
 			expectedLon: -58.503337,
 		},
+		{
+			name:        "CryptoPan - Place du capitole, Toulouse, France",
+			input:       "10A4D:937C9:8A1DA",
+			expectedLat: 43.604105,
+			expectedLon: -103.565722,
+		},
+		{
+			name:        "CryptoPan - Mairie de Toulouse, Toulouse, France",
+			input:       "10A4D:9390E:73D33",
+			expectedLat: 43.604430,
+			expectedLon: -103.474419,
+		},
+		{
+			name:        "CryptoPan - Buenos Aires, Argentina",
+			input:       "08E35:69AEF:9AE2B",
+			expectedLat: -19.432879,
+			expectedLon: -127.634411,
+		},
 	}
 
 	for _, tc := range tcl {
@@ -205,7 +223,7 @@ func TestEncoder_DecodeString(t *testing.T) {
 				t.Fatalf("Invalid result: expected latitude %0.10f but got %0.10f", tc.expectedLat, lat)
 			}
 			if lon != tc.expectedLon {
-				t.Fatalf("Invalid result: expected latitude %0.10f but got %0.10f", tc.expectedLon, lon)
+				t.Fatalf("Invalid result: expected longitude %0.10f but got %0.10f", tc.expectedLon, lon)
 			}
 		})
 	}

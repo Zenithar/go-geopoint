@@ -21,6 +21,11 @@ import "fmt"
 // Value is a type wrapper to define a GPS point
 type Value uint64
 
+var (
+	// Zero value for comparison
+	Zero = Value(0)
+)
+
 // Code returns the point encoded as hexadecimal string
 func (p Value) Code() string {
 	value := uint64(p)

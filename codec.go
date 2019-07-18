@@ -24,7 +24,7 @@ import (
 )
 
 var (
-	geoPointRegex = regexp.MustCompile("^[0-9A-Za-z]{5}:[0-9A-Za-z]{5}:[0-9A-Za-z]{5}$")
+	geoPointRegex = regexp.MustCompile("^[0-9A-Za-z]+:[0-9A-Za-z]{5}:[0-9A-Za-z]{5}$")
 )
 
 // Encode a point using Crypto-PAn algorithm
@@ -38,18 +38,20 @@ func Encode(latitude float64, longitude float64) Value {
 
 	// Deocde parts as integer
 	highLat, _ := strconv.Atoi(parts[0]) // [-90; 90] => log2(180) => 8bits
+	highLat = ((highLat + 90) % 180)
 	lowLat, _ := strconv.Atoi(parts[1])  // 10^6 => log2(10^6) => 20bits
 	highLon, _ := strconv.Atoi(parts[2]) // [-180; 180] => log2(360) => 9bits
-	lowLon, _ := strconv.Atoi(parts[3])  // 10^6 => log2(10^6) => 20bits
+	highLon = ((highLon + 180) % 360)
+	lowLon, _ := strconv.Atoi(parts[3]) // 10^6 => log2(10^6) => 20bits
 
 	// Fill an uint64
 	encoded := uint64(0)
 	encoded = encoded | uint64(lowLon)&0xFFFFF
 	encoded = encoded | (uint64(lowLat)&0xFFFFF)<<20
 	// Rebase longitude to 0 to remove sign
-	encoded = encoded | uint64(((180+highLon)&0x1FF)<<40)
+	encoded = encoded | uint64((highLon&0x1FF)<<40)
 	// Rebase latitude to 0 to remove sign
-	encoded = encoded | uint64(((90+highLat)&0xFF)<<49)
+	encoded = encoded | uint64((highLat&0xFF)<<49)
 
 	// Return a point
 	return Value(encoded)
@@ -61,8 +63,8 @@ func Decode(raw Value) (float64, float64, error) {
 	value := uint64(raw)
 
 	// Decode packed value
-	highLat := int64((value>>49)&0xFF - 90)
-	highLon := int64((value>>40)&0x1FF - 180)
+	highLat := int64((value>>49)&0xFF-90) % 180
+	highLon := int64((value>>40)&0x1FF-180) % 360
 	lowLat := uint64((value >> 20) & 0xFFFFF)
 	lowLon := uint64(value & 0xFFFFF)
 
