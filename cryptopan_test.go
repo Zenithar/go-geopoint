@@ -1,8 +1,10 @@
 package geopoint_test
 
 import (
+	"fmt"
 	"testing"
 
+	"github.com/mmcloughlin/geohash"
 	"go.zenithar.org/geopoint"
 )
 
@@ -22,24 +24,24 @@ func TestCryptoPan(t *testing.T) {
 		expectedCode string
 	}{
 		{
-			point:        geopoint.Value(75071988303315493),
-			expected:     geopoint.Value(74957639650943450),
-			expectedCode: "10A4D:937C9:8A1DA",
+			point:        geopoint.Value(75071809151126838),
+			expected:     geopoint.Value(74957365464878278),
+			expectedCode: "10A4D:53A5D:54CC6",
 		},
 		{
-			point:        geopoint.Value(75071989061436701),
-			expected:     geopoint.Value(74957639991639347),
-			expectedCode: "10A4D:9390E:73D33",
+			point:        geopoint.Value(75071809155908323),
+			expected:     geopoint.Value(74957365459525987),
+			expectedCode: "10A4D:53A58:3A163",
 		},
 		{
-			point:        geopoint.Value(77888104758015428),
-			expected:     geopoint.Value(78592826413445701),
-			expectedCode: "11737:C25C4:47245",
+			point:        geopoint.Value(77887690747650097),
+			expected:     geopoint.Value(78593030310600448),
+			expectedCode: "11737:F1D57:C1F00",
 		},
 		{
-			point:        geopoint.Value(31659983379082793),
-			expected:     geopoint.Value(40028174716349995),
-			expectedCode: "08E35:69AEF:9AE2B",
+			point:        geopoint.Value(31659800001010902),
+			expected:     geopoint.Value(40028805103861206),
+			expectedCode: "08E35:FC74F:FBDD6",
 		},
 	}
 
@@ -52,6 +54,16 @@ func TestCryptoPan(t *testing.T) {
 			t.Fatalf("invalid code, expected '%s' got '%s'", v.expectedCode, result.Code())
 		}
 	}
+}
+
+func TestGeoHash(t *testing.T) {
+	out := geohash.Encode(43.603574, 1.442917)
+	if out != "spc00cf9nrkf" {
+		t.Fatalf("invalid result: expect '%s', got '%s'", "spc00cf9nrkf", out)
+	}
+
+	lat, lon := geohash.Decode("spc00cf9nrkf")
+	fmt.Printf("%f, %f", lat, lon)
 }
 
 // -----------------------------------------------------------------------------

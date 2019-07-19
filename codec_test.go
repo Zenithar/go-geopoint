@@ -41,46 +41,52 @@ func TestEncoder_EncodeDecode(t *testing.T) {
 func TestEncoder_Encode(t *testing.T) {
 
 	tcl := []struct {
-		name          string
-		lat           float64
-		lon           float64
-		expectedPoint geopoint.Value
-		expectedCode  string
+		name           string
+		lat            float64
+		lon            float64
+		expectedPoint  geopoint.Value
+		expectedCode   string
+		expectedBase58 string
 	}{
 		{
-			name:          "Place du capitole, Toulouse, France",
-			lat:           43.603574,
-			lon:           1.442917,
-			expectedPoint: geopoint.Value(75071988303315493),
-			expectedCode:  "10AB5:935B6:6C225",
+			name:           "Place du capitole, Toulouse, France",
+			lat:            43.603574,
+			lon:            1.442917,
+			expectedPoint:  geopoint.Value(75071809151126838),
+			expectedCode:   "10AB5:69A51:94D36",
+			expectedBase58: "B7DA8NMQkm",
 		},
 		{
-			name:          "Mairie de Toulouse, Toulouse, France",
-			lat:           43.604297,
-			lon:           1.443677,
-			expectedPoint: geopoint.Value(75071989061436701),
-			expectedCode:  "10AB5:93889:6C51D",
+			name:           "Mairie de Toulouse, Toulouse, France",
+			lat:            43.604297,
+			lon:            1.443677,
+			expectedPoint:  geopoint.Value(75071809155908323),
+			expectedCode:   "10AB5:69A56:242E3",
+			expectedBase58: "B7DA8Nmv8A",
 		},
 		{
-			name:          "Tour Eiffel, Paris, France",
-			lat:           48.858373,
-			lon:           2.292292,
-			expectedPoint: geopoint.Value(77888104758015428),
-			expectedCode:  "114B6:D1905:475C4",
+			name:           "Tour Eiffel, Paris, France",
+			lat:            48.858373,
+			lon:            2.292292,
+			expectedPoint:  geopoint.Value(77887690747650097),
+			expectedCode:   "114B6:712B6:3A031",
+			expectedBase58: "BVCUZaWBXe",
 		},
 		{
-			name:          "Montréal, Quebec, Canada",
-			lat:           45.558196,
-			lon:           -73.870384,
-			expectedPoint: geopoint.Value(76116476767848432),
-			expectedCode:  "10E6B:88474:D47F0",
+			name:           "Montréal, Quebec, Canada",
+			lat:            45.558196,
+			lon:            -73.870384,
+			expectedPoint:  geopoint.Value(76116863733120784),
+			expectedCode:   "10E6B:E2603:ABF10",
+			expectedBase58: "BFNTwT9CgF",
 		},
 		{
-			name:          "Buenos Aires, Argentina",
-			lat:           -34.615662,
-			lon:           -58.503337,
-			expectedPoint: geopoint.Value(31659983379082793),
-			expectedCode:  "0707A:964EE:7AE29",
+			name:           "Buenos Aires, Argentina",
+			lat:            -34.615662,
+			lon:            -58.503337,
+			expectedPoint:  geopoint.Value(31659800001010902),
+			expectedCode:   "0707A:6B9CB:85CD6",
+			expectedBase58: "15GDnG7CTVX",
 		},
 	}
 
@@ -92,6 +98,9 @@ func TestEncoder_Encode(t *testing.T) {
 			}
 			if out.Code() != tc.expectedCode {
 				t.Fatalf("Invalid result: expected %s but got %s", tc.expectedCode, out.Code())
+			}
+			if out.Base58() != tc.expectedBase58 {
+				t.Fatalf("Invalid result: expected %s but got %s", tc.expectedBase58, out.Base58())
 			}
 		})
 	}
@@ -108,31 +117,31 @@ func TestEncoder_Decode(t *testing.T) {
 	}{
 		{
 			name:        "Place du capitole, Toulouse, France",
-			point:       geopoint.Value(75071988303315493),
+			point:       geopoint.Value(75071809151126838),
 			expectedLat: 43.603574,
 			expectedLon: 1.442917,
 		},
 		{
 			name:        "Mairie de Toulouse, Toulouse, France",
-			point:       geopoint.Value(75071989061436701),
+			point:       geopoint.Value(75071809155908323),
 			expectedLat: 43.604297,
 			expectedLon: 1.443677,
 		},
 		{
 			name:        "Tour Eiffel, Paris, France",
-			point:       geopoint.Value(77888104758015428),
+			point:       geopoint.Value(77887690747650097),
 			expectedLat: 48.858373,
 			expectedLon: 2.292292,
 		},
 		{
 			name:        "Montréal, Quebec, Canada",
-			point:       geopoint.Value(76116476767848432),
+			point:       geopoint.Value(76116863733120784),
 			expectedLat: 45.558196,
 			expectedLon: -73.870384,
 		},
 		{
 			name:        "Buenos Aires, Argentina",
-			point:       geopoint.Value(31659983379082793),
+			point:       geopoint.Value(31659800001010902),
 			expectedLat: -34.615662,
 			expectedLon: -58.503337,
 		},
@@ -165,51 +174,45 @@ func TestEncoder_DecodeString(t *testing.T) {
 	}{
 		{
 			name:        "Place du capitole, Toulouse, France",
-			input:       "10AB5:935B6:6C225",
+			input:       "10AB5:69A51:94D36",
 			expectedLat: 43.603574,
 			expectedLon: 1.442917,
 		},
 		{
 			name:        "Mairie de Toulouse, Toulouse, France",
-			input:       "10AB5:93889:6C51D",
+			input:       "10AB5:69A56:242E3",
 			expectedLat: 43.604297,
 			expectedLon: 1.443677,
 		},
 		{
 			name:        "Tour Eiffel, Paris, France",
-			input:       "114B6:D1905:475C4",
+			input:       "114B6:712B6:3A031",
 			expectedLat: 48.858373,
 			expectedLon: 2.292292,
 		},
 		{
 			name:        "Montréal, Quebec, Canada",
-			input:       "10E6B:88474:D47F0",
+			input:       "10E6B:E2603:ABF10",
 			expectedLat: 45.558196,
 			expectedLon: -73.870384,
 		},
 		{
 			name:        "Buenos Aires, Argentina",
-			input:       "0707A:964EE:7AE29",
+			input:       "0707A:6B9CB:85CD6",
 			expectedLat: -34.615662,
 			expectedLon: -58.503337,
 		},
 		{
 			name:        "CryptoPan - Place du capitole, Toulouse, France",
-			input:       "10A4D:937C9:8A1DA",
-			expectedLat: 43.604105,
-			expectedLon: -103.565722,
+			input:       "10A4D:53A5D:54CC6",
+			expectedLat: 43.868266,
+			expectedLon: -103.116777,
 		},
 		{
 			name:        "CryptoPan - Mairie de Toulouse, Toulouse, France",
-			input:       "10A4D:9390E:73D33",
-			expectedLat: 43.604430,
-			expectedLon: -103.474419,
-		},
-		{
-			name:        "CryptoPan - Buenos Aires, Argentina",
-			input:       "08E35:69AEF:9AE2B",
-			expectedLat: -19.432879,
-			expectedLon: -127.634411,
+			input:       "10A4D:53A58:3A163",
+			expectedLat: 43.864537,
+			expectedLon: -103.117189,
 		},
 	}
 
