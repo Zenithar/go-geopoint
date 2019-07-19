@@ -17,10 +17,7 @@
 package geopoint
 
 import (
-	"encoding/binary"
 	"fmt"
-
-	"github.com/mr-tron/base58"
 )
 
 // Value is a type wrapper to define a GPS point
@@ -35,13 +32,6 @@ var (
 func (p Value) Code() string {
 	value := uint64(p)
 	return fmt.Sprintf("%05X:%05X:%05X", (value >> 40), (value>>20)&0xFFFFF, (value)&0xFFFFF)
-}
-
-// Base58 returns the point encoded as hexadecimal string
-func (p Value) Base58() string {
-	addr := make([]byte, 8)
-	binary.BigEndian.PutUint64(addr, uint64(p))
-	return base58.FastBase58Encoding(addr)
 }
 
 // -----------------------------------------------------------------------------

@@ -1,10 +1,8 @@
 package geopoint_test
 
 import (
-	"fmt"
 	"testing"
 
-	"github.com/mmcloughlin/geohash"
 	"go.zenithar.org/geopoint"
 )
 
@@ -54,16 +52,6 @@ func TestCryptoPan(t *testing.T) {
 			t.Fatalf("invalid code, expected '%s' got '%s'", v.expectedCode, result.Code())
 		}
 	}
-}
-
-func TestGeoHash(t *testing.T) {
-	out := geohash.Encode(43.603574, 1.442917)
-	if out != "spc00cf9nrkf" {
-		t.Fatalf("invalid result: expect '%s', got '%s'", "spc00cf9nrkf", out)
-	}
-
-	lat, lon := geohash.Decode("spc00cf9nrkf")
-	fmt.Printf("%f, %f", lat, lon)
 }
 
 // -----------------------------------------------------------------------------

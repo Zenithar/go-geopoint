@@ -47,28 +47,6 @@ func TestValue_Code(t *testing.T) {
 	}
 }
 
-func TestValue_Base58(t *testing.T) {
-	tcl := []struct {
-		name         string
-		point        geopoint.Value
-		expectedCode string
-	}{
-		{
-			name:         "Place du capitole, Toulouse, France",
-			point:        geopoint.Value(75071988303315493),
-			expectedCode: "B7DEqKRCse",
-		},
-	}
-
-	for _, tc := range tcl {
-		t.Run(tc.name, func(t *testing.T) {
-			got := tc.point.Base58()
-			if got != tc.expectedCode {
-				t.Fatalf("invalid code, expected %s, got %s", tc.expectedCode, got)
-			}
-		})
-	}
-}
 func TestValue_MarshallJSON(t *testing.T) {
 	tcl := []struct {
 		name         string

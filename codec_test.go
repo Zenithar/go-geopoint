@@ -46,7 +46,6 @@ func TestEncoder_Encode(t *testing.T) {
 		lon            float64
 		expectedPoint  geopoint.Value
 		expectedCode   string
-		expectedBase58 string
 	}{
 		{
 			name:           "Place du capitole, Toulouse, France",
@@ -54,7 +53,6 @@ func TestEncoder_Encode(t *testing.T) {
 			lon:            1.442917,
 			expectedPoint:  geopoint.Value(75071809151126838),
 			expectedCode:   "10AB5:69A51:94D36",
-			expectedBase58: "B7DA8NMQkm",
 		},
 		{
 			name:           "Mairie de Toulouse, Toulouse, France",
@@ -62,7 +60,6 @@ func TestEncoder_Encode(t *testing.T) {
 			lon:            1.443677,
 			expectedPoint:  geopoint.Value(75071809155908323),
 			expectedCode:   "10AB5:69A56:242E3",
-			expectedBase58: "B7DA8Nmv8A",
 		},
 		{
 			name:           "Tour Eiffel, Paris, France",
@@ -70,7 +67,6 @@ func TestEncoder_Encode(t *testing.T) {
 			lon:            2.292292,
 			expectedPoint:  geopoint.Value(77887690747650097),
 			expectedCode:   "114B6:712B6:3A031",
-			expectedBase58: "BVCUZaWBXe",
 		},
 		{
 			name:           "Montréal, Quebec, Canada",
@@ -78,7 +74,6 @@ func TestEncoder_Encode(t *testing.T) {
 			lon:            -73.870384,
 			expectedPoint:  geopoint.Value(76116863733120784),
 			expectedCode:   "10E6B:E2603:ABF10",
-			expectedBase58: "BFNTwT9CgF",
 		},
 		{
 			name:           "Buenos Aires, Argentina",
@@ -86,7 +81,6 @@ func TestEncoder_Encode(t *testing.T) {
 			lon:            -58.503337,
 			expectedPoint:  geopoint.Value(31659800001010902),
 			expectedCode:   "0707A:6B9CB:85CD6",
-			expectedBase58: "15GDnG7CTVX",
 		},
 	}
 
@@ -98,9 +92,6 @@ func TestEncoder_Encode(t *testing.T) {
 			}
 			if out.Code() != tc.expectedCode {
 				t.Fatalf("Invalid result: expected %s but got %s", tc.expectedCode, out.Code())
-			}
-			if out.Base58() != tc.expectedBase58 {
-				t.Fatalf("Invalid result: expected %s but got %s", tc.expectedBase58, out.Base58())
 			}
 		})
 	}
