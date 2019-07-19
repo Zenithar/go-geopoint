@@ -24,7 +24,7 @@ import (
 )
 
 var (
-	geoPointRegex = regexp.MustCompile("^[0-9A-Za-z]+:[0-9A-Za-z]{5}:[0-9A-Za-z]{5}$")
+	geoPointRegex = regexp.MustCompile("^[0-9A-Za-z]{5}:[0-9A-Za-z]{5}:[0-9A-Za-z]{5}$")
 )
 
 // Encode a point using Crypto-PAn algorithm
