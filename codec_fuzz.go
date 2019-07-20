@@ -27,7 +27,7 @@ func Fuzz(data []byte) int {
 	if err := Check(code); err != nil {
 		return 0
 	}
-	lat, lon, err := DecodeString(code)
+	lat, lon, err := FromString(code)
 	if err != nil {
 		return 2
 	}

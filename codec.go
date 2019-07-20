@@ -36,13 +36,13 @@ func Encode(latitude float64, longitude float64) Value {
 	// Split in parts
 	parts := strings.SplitN(coords, ".", 4)
 
-	// Deocde parts as integer
+	// Decode parts as integer
 	highLat, _ := strconv.Atoi(parts[0]) // [-90; 90] => log2(180) => 8bits
-	highLat = ((highLat + 90) % 180)
+	highLat = ((highLat + 90) % 180)     // Rebase to non-negative scale
 	lowLat, _ := strconv.Atoi(parts[1])  // 10^6 => log2(10^6) => 20bits
 	highLon, _ := strconv.Atoi(parts[2]) // [-180; 180] => log2(360) => 9bits
-	highLon = ((highLon + 180) % 360)
-	lowLon, _ := strconv.Atoi(parts[3]) // 10^6 => log2(10^6) => 20bits
+	highLon = ((highLon + 180) % 360)    // Rebase to non-negative scale
+	lowLon, _ := strconv.Atoi(parts[3])  // 10^6 => log2(10^6) => 20bits
 
 	// Fill an uint64
 	encoded := uint64(0)
@@ -64,14 +64,15 @@ func Decode(raw Value) (float64, float64, error) {
 	value := uint64(raw)
 
 	// Decode packed value
-	highLat := int64((value>>49)&0xFF-90) % 180
-	highLon := int64((value>>40)&0x1FF-180) % 360
+	highLat := int64((value>>49)&0xFF-90) % 180   // Center origin [-90;90]
+	highLon := int64((value>>40)&0x1FF-180) % 360 // Center origin [-180;180]
 	lowLat, lowLon := deinterleave(uint64(value & 0xFFFFFFFFFF))
 
 	// Assemble values
 	latStr := fmt.Sprintf("%d.%d", highLat, lowLat)
 	lonStr := fmt.Sprintf("%d.%d", highLon, lowLon)
 
+	// Extract float values from string
 	lat, err := strconv.ParseFloat(latStr, 64)
 	if err != nil {
 		return 0, 0, ErrInvalidGeoPointValue
@@ -95,8 +96,8 @@ func Check(raw string) error {
 	return nil
 }
 
-// DecodeString a point to retrieve (lat,lon)
-func DecodeString(raw string) (float64, float64, error) {
+// FromString a point to retrieve (lat,lon)
+func FromString(raw string) (float64, float64, error) {
 
 	// Check given raw string
 	if err := Check(raw); err != nil {

@@ -41,46 +41,46 @@ func TestEncoder_EncodeDecode(t *testing.T) {
 func TestEncoder_Encode(t *testing.T) {
 
 	tcl := []struct {
-		name           string
-		lat            float64
-		lon            float64
-		expectedPoint  geopoint.Value
-		expectedCode   string
+		name          string
+		lat           float64
+		lon           float64
+		expectedPoint geopoint.Value
+		expectedCode  string
 	}{
 		{
-			name:           "Place du capitole, Toulouse, France",
-			lat:            43.603574,
-			lon:            1.442917,
-			expectedPoint:  geopoint.Value(75071809151126838),
-			expectedCode:   "10AB5:69A51:94D36",
+			name:          "Place du capitole, Toulouse, France",
+			lat:           43.603574,
+			lon:           1.442917,
+			expectedPoint: geopoint.Value(75071809151126838),
+			expectedCode:  "10AB5:69A51:94D36",
 		},
 		{
-			name:           "Mairie de Toulouse, Toulouse, France",
-			lat:            43.604297,
-			lon:            1.443677,
-			expectedPoint:  geopoint.Value(75071809155908323),
-			expectedCode:   "10AB5:69A56:242E3",
+			name:          "Mairie de Toulouse, Toulouse, France",
+			lat:           43.604297,
+			lon:           1.443677,
+			expectedPoint: geopoint.Value(75071809155908323),
+			expectedCode:  "10AB5:69A56:242E3",
 		},
 		{
-			name:           "Tour Eiffel, Paris, France",
-			lat:            48.858373,
-			lon:            2.292292,
-			expectedPoint:  geopoint.Value(77887690747650097),
-			expectedCode:   "114B6:712B6:3A031",
+			name:          "Tour Eiffel, Paris, France",
+			lat:           48.858373,
+			lon:           2.292292,
+			expectedPoint: geopoint.Value(77887690747650097),
+			expectedCode:  "114B6:712B6:3A031",
 		},
 		{
-			name:           "Montréal, Quebec, Canada",
-			lat:            45.558196,
-			lon:            -73.870384,
-			expectedPoint:  geopoint.Value(76116863733120784),
-			expectedCode:   "10E6B:E2603:ABF10",
+			name:          "Montréal, Quebec, Canada",
+			lat:           45.558196,
+			lon:           -73.870384,
+			expectedPoint: geopoint.Value(76116863733120784),
+			expectedCode:  "10E6B:E2603:ABF10",
 		},
 		{
-			name:           "Buenos Aires, Argentina",
-			lat:            -34.615662,
-			lon:            -58.503337,
-			expectedPoint:  geopoint.Value(31659800001010902),
-			expectedCode:   "0707A:6B9CB:85CD6",
+			name:          "Buenos Aires, Argentina",
+			lat:           -34.615662,
+			lon:           -58.503337,
+			expectedPoint: geopoint.Value(31659800001010902),
+			expectedCode:  "0707A:6B9CB:85CD6",
 		},
 	}
 
@@ -154,7 +154,7 @@ func TestEncoder_Decode(t *testing.T) {
 	}
 }
 
-func TestEncoder_DecodeString(t *testing.T) {
+func TestEncoder_FromString(t *testing.T) {
 
 	tcl := []struct {
 		name        string
@@ -209,7 +209,7 @@ func TestEncoder_DecodeString(t *testing.T) {
 
 	for _, tc := range tcl {
 		t.Run(tc.name, func(t *testing.T) {
-			lat, lon, err := geopoint.DecodeString(tc.input)
+			lat, lon, err := geopoint.FromString(tc.input)
 			if err != tc.expectedErr {
 				t.Fatalf("Invalid result: Error expected %v, go %v.", tc.expectedErr, err)
 			}

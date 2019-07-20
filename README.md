@@ -9,44 +9,41 @@ func foo() {
   p := geopoint.Encode(43.603574, 1.442917)
 
   fmt.Printf("%d\n", uint64(p))
-  // 75071988303315493
+  // 75071809151126838
 
   fmt.Printf("%s\n", p.Code())
-  // 10AB5:935B6:6C225
+  // 10AB5:69A51:94D36
 }
 ```
-## Privacy encoding
+## What's the difference with geohash ?
 
-:alert: **Experimental** DON'T USE IT !!!
-No proof to work, ATM, just an idea implemented.
+For compatibility, you should use geohash. 
 
-```go
-import "go.zenithar.org/geopoint"
+The main objectives is to find a way to encode point (lat,lon) as an uint64 
+(like geohash) and make it sortable.
 
-var (
-  key = []byte(.....)
-)
+## Brain dump
 
-func foo() {
-  p := geopoint.Encode(43.603574, 1.442917)
+I tryied to apply CryptoPan anonimyzer on the uint64 encoded coordinate, I know that
+this algorithm is told to be prefix-preserving, but after application of the algorithm
+point are not keeping their geospace properties at first sight.
 
-  fmt.Printf("%d\n", uint64(p))
-  // 31659983379082793
+I'm trying to find a cryptographic keyed hash function for GPS point, and the result
+should be a GPS point too. Maybe all GPS related arithmetic should be influenced by 
+the cryptographic hash, like in homothecy. GPS Point anonymization are based on 
+precision loss.
 
-  fmt.Printf("%s\n", p.Code())
-  // 0707A:964EE:7AE29
+A real GPS point is projected in another `planet` GPS point. The other planet is 
+generated with the `key` of the hash function. An origin point as always the same 
+other planet point value (injective function but collision must be proved also). 
+It could be visualized with a homothetic transformation of the original planet 
+were the `key` could be part of the homogeneous dilatation factor, but not only
+countries of the generated earth should have different shapes.
 
-  // Anonymize the point
-  cpan, _ := geopoint.NewCryptoPan(key)
-  ano := cpan.Anonymize(p)
+Maybe I should investigate in Format Preserving Encryption field...
+I'm not a mathematician or a scientist, just an intuitive person.
 
-  fmt.Printf("%d\n", uint64(ano))
-  // 40028174716349995
-
-  fmt.Printf("%s\n", ano.Code())
-  // 08E35:69AEF:9AE2B
-}
-```
+Maybe this is a full bowl of shit, waiting for being flushed !
 
 ## Fun ideas
 
