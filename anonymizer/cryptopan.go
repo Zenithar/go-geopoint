@@ -1,3 +1,5 @@
+// +build cryptopan experimental
+
 /*
  * Copyright (c) 2014, Yawning Angel <yawning at schwanenlied dot me>
  * All rights reserved.
@@ -50,7 +52,7 @@
 //    mapping from an original IP address to its anonymized counterpart.
 //
 
-package geopoint
+package anonymizer
 
 import (
 	"crypto/aes"
@@ -58,6 +60,8 @@ import (
 	"crypto/subtle"
 	"encoding/binary"
 	"strconv"
+
+	"go.zenithar.org/geopoint"
 )
 
 const (
@@ -100,7 +104,7 @@ type Cryptopan struct {
 }
 
 // Anonymize anonymizes the provided IP address with the Crypto-PAn algorithm.
-func (ctx *Cryptopan) Anonymize(point Value) Value {
+func (ctx *Cryptopan) Anonymize(point geopoint.Value) geopoint.Value {
 	// Encode point as bitfield
 	addr := make([]byte, 8)
 	binary.BigEndian.PutUint64(addr, uint64(point))
@@ -140,13 +144,13 @@ func (ctx *Cryptopan) Anonymize(point Value) Value {
 	}
 
 	// Decode point
-	v := Value(binary.BigEndian.Uint64(toXor[:len(addr)]))
-	lat, lon, err := Decode(v)
+	v := geopoint.Value(binary.BigEndian.Uint64(toXor[:len(addr)]))
+	lat, lon, err := geopoint.Decode(v)
 	if err != nil {
 		panic(err)
 	}
 
-	return Encode(lat, lon)
+	return geopoint.Encode(lat, lon)
 }
 
 // NewCryptoPan constructs and initializes Crypto-PAn with a given key.
