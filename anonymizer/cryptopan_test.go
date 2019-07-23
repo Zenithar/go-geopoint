@@ -73,6 +73,113 @@ func TestCryptoPan(t *testing.T) {
 	}
 }
 
+func TestCryptoPan_World(t *testing.T) {
+	cpan, err := anonymizer.NewCryptoPan(testKey)
+	if err != nil {
+		t.Fatal("New(testKey) failed:", err)
+	}
+
+	vectors := []struct {
+		lat                 float64
+		lon                 float64
+		point               geopoint.Value
+		expectedCryptoPoint geopoint.Value
+		expectedCryptoLat   float64
+		expectedCryptoLon   float64
+	}{
+		{
+			lat:                 0,
+			lon:                 0,
+			expectedCryptoPoint: geopoint.Value(14860500948746467),
+			expectedCryptoLat:   -64.132617,
+			expectedCryptoLon:   23.656909,
+		},
+		{
+			lat:                 0,
+			lon:                 90,
+			expectedCryptoPoint: geopoint.Value(14918225837949661),
+			expectedCryptoLat:   -64.161807,
+			expectedCryptoLon:   76.145434,
+		},
+		{
+			lat:                 0,
+			lon:                 180,
+			expectedCryptoPoint: geopoint.Value(14650440576121728),
+			expectedCryptoLat:   -64.986960,
+			expectedCryptoLon:   -168.496120,
+		},
+		{
+			lat:                 0,
+			lon:                 -180,
+			expectedCryptoPoint: geopoint.Value(14650440576121728),
+			expectedCryptoLat:   -64.986960,
+			expectedCryptoLon:   -168.496120,
+		},
+		{
+			lat:                 0,
+			lon:                 -90,
+			expectedCryptoPoint: geopoint.Value(14736189554943261),
+			expectedCryptoLat:   -64.981431,
+			expectedCryptoLon:   -90.424386,
+		},
+		{
+			lat:                 45,
+			lon:                 45,
+			expectedCryptoPoint: geopoint.Value(76384112167864092),
+			expectedCryptoLat:   45.788406,
+			expectedCryptoLon:   170.853906,
+		},
+		{
+			lat:                 -45,
+			lon:                 -135,
+			expectedCryptoPoint: geopoint.Value(46376032511439846),
+			expectedCryptoLat:   -8.654170,
+			expectedCryptoLon:   14.557021,
+		},
+		{
+			lat:                 90,
+			lon:                 90,
+			expectedCryptoPoint: geopoint.Value(101619606975423775),
+			expectedCryptoLat:   90.982583,
+			expectedCryptoLon:   82.491075,
+		},
+		{
+			lat:                 90,
+			lon:                 0,
+			expectedCryptoPoint: geopoint.Value(101519575039615292),
+			expectedCryptoLat:   90.130582,
+			expectedCryptoLon:   -9.654918,
+		},
+		{
+			lat:                 -90,
+			lon:                 0,
+			expectedCryptoPoint: geopoint.Value(71833354328081954),
+			expectedCryptoLat:   37.161824,
+			expectedCryptoLon:   128.210965,
+		},
+	}
+
+	for _, v := range vectors {
+		v.point = geopoint.Encode(v.lat, v.lon)
+
+		cryptoPoint := cpan.Anonymize(v.point)
+		if cryptoPoint != v.expectedCryptoPoint {
+			t.Errorf("invalid result, expected %d, got %d", uint64(v.expectedCryptoPoint), cryptoPoint)
+		}
+
+		lat, lon, err := geopoint.Decode(cryptoPoint)
+		if err != nil {
+			t.Fatalf("error %d should not be raised, got %v", uint64(v.expectedCryptoPoint), err)
+		}
+		if v.expectedCryptoLat != lat {
+			t.Errorf("invalid latitude, %d expected %f, got %f", uint64(v.expectedCryptoPoint), v.expectedCryptoLat, lat)
+		}
+		if v.expectedCryptoLon != lon {
+			t.Errorf("invalid longitude, %d expected %f, got %f", uint64(v.expectedCryptoPoint), v.expectedCryptoLon, lon)
+		}
+	}
+}
+
 // -----------------------------------------------------------------------------
 
 // BenchmarkCryptopanIPv4 benchmarks annonymizing IPv4 addresses.

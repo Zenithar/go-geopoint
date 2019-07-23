@@ -41,12 +41,27 @@ func TestEncoder_EncodeDecode(t *testing.T) {
 func TestEncoder_Encode(t *testing.T) {
 
 	tcl := []struct {
-		name          string
-		lat           float64
-		lon           float64
-		expectedPoint geopoint.Value
-		expectedCode  string
+		name           string
+		lat            float64
+		lon            float64
+		expectedPoint  geopoint.Value
+		expectedCode   string
+		expectedBase58 string
 	}{
+		{
+			name:          "Pôle Nord",
+			lat:           90,
+			lon:           0,
+			expectedPoint: geopoint.Value(101528903708835840),
+			expectedCode:  "168B4:00000:00000",
+		},
+		{
+			name:          "Pôle Sud",
+			lat:           -90,
+			lon:           0,
+			expectedPoint: geopoint.Value(197912092999680),
+			expectedCode:  "000B4:00000:00000",
+		},
 		{
 			name:          "Place du capitole, Toulouse, France",
 			lat:           43.603574,
@@ -154,7 +169,7 @@ func TestEncoder_Decode(t *testing.T) {
 	}
 }
 
-func TestEncoder_FromString(t *testing.T) {
+func TestEncoder_DecodeString(t *testing.T) {
 
 	tcl := []struct {
 		name        string
@@ -198,12 +213,6 @@ func TestEncoder_FromString(t *testing.T) {
 			input:       "10A4D:53A5D:54CC6",
 			expectedLat: 43.868266,
 			expectedLon: -103.116777,
-		},
-		{
-			name:        "CryptoPan - Mairie de Toulouse, Toulouse, France",
-			input:       "10A4D:53A58:3A163",
-			expectedLat: 43.864537,
-			expectedLon: -103.117189,
 		},
 	}
 

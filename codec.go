@@ -38,7 +38,7 @@ func Encode(latitude float64, longitude float64) Value {
 
 	// Decode parts as integer
 	highLat, _ := strconv.Atoi(parts[0]) // [-90; 90] => log2(180) => 8bits
-	highLat = ((highLat + 90) % 180)     // Rebase to non-negative scale
+	highLat = (highLat + 90)             // Rebase to non-negative scale
 	lowLat, _ := strconv.Atoi(parts[1])  // 10^6 => log2(10^6) => 20bits
 	highLon, _ := strconv.Atoi(parts[2]) // [-180; 180] => log2(360) => 9bits
 	highLon = ((highLon + 180) % 360)    // Rebase to non-negative scale
@@ -64,7 +64,7 @@ func Decode(raw Value) (float64, float64, error) {
 	value := uint64(raw)
 
 	// Decode packed value
-	highLat := int64((value>>49)&0xFF-90) % 180   // Center origin [-90;90]
+	highLat := int64((value>>49)&0xFF - 90)       // Center origin [-90;90]
 	highLon := int64((value>>40)&0x1FF-180) % 360 // Center origin [-180;180]
 	lowLat, lowLon := deinterleave(uint64(value & 0xFFFFFFFFFF))
 
