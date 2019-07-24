@@ -30,7 +30,7 @@ import (
 var testKey = []byte{21, 34, 23, 141, 51, 164, 207, 128, 19, 10, 91, 22, 73, 144, 125, 16, 216, 152, 143, 131, 121, 121, 101, 39, 98, 87, 76, 45, 42, 132, 34, 2}
 
 func TestCryptoPan(t *testing.T) {
-	cpan, err := anonymizer.NewCryptoPan(testKey)
+	cpan, err := anonymizer.CryptoPan(testKey)
 	if err != nil {
 		t.Fatal("New(testKey) failed:", err)
 	}
@@ -74,7 +74,7 @@ func TestCryptoPan(t *testing.T) {
 }
 
 func TestCryptoPan_World(t *testing.T) {
-	cpan, err := anonymizer.NewCryptoPan(testKey)
+	cpan, err := anonymizer.CryptoPan(testKey)
 	if err != nil {
 		t.Fatal("New(testKey) failed:", err)
 	}
@@ -184,7 +184,7 @@ func TestCryptoPan_World(t *testing.T) {
 
 // BenchmarkCryptopanIPv4 benchmarks annonymizing IPv4 addresses.
 func BenchmarkCryptopanPoint(b *testing.B) {
-	cpan, err := anonymizer.NewCryptoPan(testKey)
+	cpan, err := anonymizer.CryptoPan(testKey)
 	if err != nil {
 		b.Fatal("New(testKey) failed:", err)
 	}

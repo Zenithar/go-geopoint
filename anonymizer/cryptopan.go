@@ -72,6 +72,8 @@ const (
 	keySize   = 128 / 8
 )
 
+// -----------------------------------------------------------------------------
+
 // KeySizeError is the error returned when the provided key is an invalid
 // length.
 type KeySizeError int
@@ -96,15 +98,36 @@ func (v *bitvector) Bit(idx uint) uint {
 	return uint((v[byteIdx] & (1 << bitIdx)) >> bitIdx)
 }
 
+// -----------------------------------------------------------------------------
+
 // Cryptopan is an instance of the Crypto-PAn algorithm, initialized with a
 // given key.
-type Cryptopan struct {
+type cryptopan struct {
 	aesImpl cipher.Block
 	pad     bitvector
 }
 
-// Anonymize anonymizes the provided IP address with the Crypto-PAn algorithm.
-func (ctx *Cryptopan) Anonymize(point geopoint.Value) geopoint.Value {
+// NewCryptoPan constructs and initializes Crypto-PAn with a given key.
+func CryptoPan(key []byte) (Strategy, error) {
+	var err error
+
+	if len(key) != Size {
+		return nil, KeySizeError(len(key))
+	}
+
+	cp := &cryptopan{}
+	if cp.aesImpl, err = aes.NewCipher(key[0:keySize]); err != nil {
+		return nil, err
+	}
+	cp.aesImpl.Encrypt(cp.pad[:], key[keySize:])
+
+	return cp, err
+}
+
+// -----------------------------------------------------------------------------
+
+// Anonymize anonymizes the provided point with the Crypto-PAn algorithm.
+func (cp *cryptopan) Anonymize(point geopoint.Value) geopoint.Value {
 	// Encode point as bitfield
 	addr := make([]byte, 8)
 	binary.BigEndian.PutUint64(addr, uint64(point))
@@ -112,10 +135,10 @@ func (ctx *Cryptopan) Anonymize(point geopoint.Value) geopoint.Value {
 	addrBits := uint(8 * 8)
 	var origAddr, input, output, toXor bitvector
 	copy(origAddr[:], addr[:])
-	copy(input[:], ctx.pad[:])
+	copy(input[:], cp.pad[:])
 
 	// The first bit does not take any bits from orig_addr.
-	ctx.aesImpl.Encrypt(output[:], input[:])
+	cp.aesImpl.Encrypt(output[:], input[:])
 	toXor.SetBit(0, output.Bit(0))
 
 	// The rest of the one time pad is build by copying orig_addr into the AES
@@ -125,7 +148,7 @@ func (ctx *Cryptopan) Anonymize(point geopoint.Value) geopoint.Value {
 		input.SetBit(pos-1, origAddr.Bit(pos-1))
 
 		// ECB-AES128 the input, only one bit of output is used per iteration.
-		ctx.aesImpl.Encrypt(output[:], input[:])
+		cp.aesImpl.Encrypt(output[:], input[:])
 
 		// Note: Per David Stott@Lucent, using the MSB of the PRF output leads
 		// to weaker anonymized output.  Jinliang Fan (one of the original
@@ -153,17 +176,18 @@ func (ctx *Cryptopan) Anonymize(point geopoint.Value) geopoint.Value {
 	return geopoint.Encode(lat, lon)
 }
 
-// NewCryptoPan constructs and initializes Crypto-PAn with a given key.
-func NewCryptoPan(key []byte) (ctx *Cryptopan, err error) {
-	if len(key) != Size {
-		return nil, KeySizeError(len(key))
+// DeAnonymize de-anonymizes the provided point with the Crypto-PAn algorithm.
+func (cp *cryptopan) DeAnonymize(point geopoint.Value) geopoint.Value {
+	// Encode point as bitfield
+	addr := make([]byte, 8)
+	binary.BigEndian.PutUint64(addr, uint64(point))
+
+	// Decode point
+	v := geopoint.Value(binary.BigEndian.Uint64(addr))
+	lat, lon, err := geopoint.Decode(v)
+	if err != nil {
+		panic(err)
 	}
 
-	ctx = new(Cryptopan)
-	if ctx.aesImpl, err = aes.NewCipher(key[0:keySize]); err != nil {
-		return nil, err
-	}
-	ctx.aesImpl.Encrypt(ctx.pad[:], key[keySize:])
-
-	return
+	return geopoint.Encode(lat, lon)
 }
